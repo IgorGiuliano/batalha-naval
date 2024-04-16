@@ -8,9 +8,9 @@ datasource db {
 }
 
 model User {
-  id_user String      @id @default(auto()) @map("_id") @db.ObjectId
-  email   String      @unique
-  scores  GameScore[]
+  id     String      @id @default(auto()) @map("_id") @db.ObjectId
+  email  String      @unique
+  scores GameScore[]
 }
 
 model GameScore {
@@ -18,5 +18,5 @@ model GameScore {
   score    Int
   gameDate DateTime
   userId   String   @map("user_id") @db.ObjectId
-  user     User     @relation(fields: [userId], references: [id_user])
+  user     User     @relation(fields: [userId], references: [id])
 }
