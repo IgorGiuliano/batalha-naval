@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  backend:
+    build: ./backend/dist
+    container_name: batalha_naval_backend
+    tty: true
+    networks:
+      - node-networks
+    ports:
+      - "3333:3333"
+
+  frontend:
+    build: ./frontend/dist
+    container_name: batalha_naval_frontend
+    networks:
+      - node-network
+    ports:
+      - "3000:3000"
+    depends_on: 
+      - backend
+     
+networks:
+  node-network:
+    driver: bridge
