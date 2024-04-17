@@ -1,15 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/Home.scss';
+import api from '../services/api';
 
-type Ranking = {
+type PlayerRanking = {
   position: number;
   email: string;
-  points: number;
+  score: number;
 };
+
+interface User {
+  id: string;
+  email: string;
+}
+
+interface GameRecord {
+  id: string;
+  score: number;
+  gameDate: string;
+  userId: string;
+  user: User;
+}
 
 type Board = boolean[][];
 
-// Função para inicializar o tabuleiro com navios posicionados aleatoriamente
 const initializeBoard = (size: number, shipsCount: number): Board => {
   const board: Board = Array.from({ length: size }, () =>
     Array.from({ length: size }, () => false)
@@ -19,39 +32,47 @@ const initializeBoard = (size: number, shipsCount: number): Board => {
   while (placedShips < shipsCount) {
     const row = Math.floor(Math.random() * size);
     const col = Math.floor(Math.random() * size);
-
-    if (!board[row][col]) {  // Se não há navio nesta posição
+    if (!board[row][col]) {
       board[row][col] = true;
       placedShips++;
     }
   }
-
   return board;
 };
 
 export default function Home() {
   const [board, setBoard] = useState<Board>([]);
   const [attacks, setAttacks] = useState<Record<string, boolean>>({});
+  const [rankings, setRankings] = useState<PlayerRanking[]>([]);
 
   useEffect(() => {
-    setBoard(initializeBoard(10, 15));  // 10x10 grid com 15 navios
+    setBoard(initializeBoard(10, 15));
+    handleGetTopPlayers();
   }, []);
 
-  const handleBlockClick = (row: number, col: number): void => {
-    const posKey = `${row}-${col}`;
-    if (!(posKey in attacks)) { // Verifica se já foi clicado
-      setAttacks({
-        ...attacks,
-        [posKey]: board[row][col] // Armazena se havia um navio
-      });
+  const handleGetTopPlayers = async () => {
+    try {
+      const response = await api.get('/ranking/retrieve-top-players');
+      const players = response.data.map((player: GameRecord, index: number) => ({
+        position: index + 1,
+        email: player.user.email,
+        score: player.score
+      }));
+      setRankings(players);
+    } catch (error) {
+      console.error("Failed to fetch players", error);
     }
   };
 
-  const rankings: Ranking[] = Array.from({ length: 10 }, (_, index) => ({
-    position: index + 1,
-    email: `user${index + 1}@gmail.com`,
-    points: 1000 - index * 100
-  }));
+  const handleBlockClick = (row: number, col: number): void => {
+    const posKey = `${row}-${col}`;
+    if (!(posKey in attacks)) {
+      setAttacks({
+        ...attacks,
+        [posKey]: board[row][col]
+      });
+    }
+  };
 
   return (
     <div className="wrapper">
@@ -67,11 +88,11 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {rankings.map(rank => (
-                <tr key={rank.position}>
+              {rankings.map((rank, index) => (
+                <tr key={index}>
                   <td>{rank.position.toString().padStart(2, '0')}</td>
                   <td>{rank.email}</td>
-                  <td>{rank.points}</td>
+                  <td>{rank.score}</td>
                 </tr>
               ))}
             </tbody>
