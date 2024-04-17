@@ -28,7 +28,7 @@ export class RankingService {
     }
 
     //registrar score
-    return await this.recordScore(email, score);
+    return await this.recordScore(existsUser.id, score);
   }
 
   async findUser(email: string) {
@@ -52,10 +52,11 @@ export class RankingService {
   }
 
   async recordScore(id: string, score: number) {
+    const isoDateString = new Date().toISOString();
     const record = await prisma.gameScore.create({
       data: {
         score,
-        gameDate: Date(),
+        gameDate: isoDateString,
         userId: id,
       },
     });
