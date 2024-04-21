@@ -21,32 +21,64 @@ interface GameRecord {
   user: User;
 }
 
+type ShipType = {
+  name: string;
+  size: number;
+};
+
+type Orientation = 'H' | 'V';  // H: Horizontal, V: Vertical
+
 type Board = boolean[][];
 
-const initializeBoard = (size: number, shipsCount: number): Board => {
+const initializeBoard = (size: number, ships: ShipType[]): Board => {
   const board: Board = Array.from({ length: size }, () =>
     Array.from({ length: size }, () => false)
   );
 
-  let placedShips = 0;
-  while (placedShips < shipsCount) {
-    const row = Math.floor(Math.random() * size);
-    const col = Math.floor(Math.random() * size);
-    if (!board[row][col]) {
-      board[row][col] = true;
-      placedShips++;
+  ships.forEach(ship => {
+    let placed = false;
+    while (!placed) {
+      const row = Math.floor(Math.random() * size);
+      const col = Math.floor(Math.random() * size);
+      const orientation: Orientation = Math.random() > 0.5 ? 'H' : 'V';
+
+      if (canPlaceShip(row, col, ship.size, orientation, board, size)) {
+        for (let i = 0; i < ship.size; i++) {
+          if (orientation === 'H') board[row][col + i] = true;
+          else board[row + i][col] = true;
+        }
+        placed = true;
+      }
     }
-  }
+  });
+
   return board;
 };
 
+const canPlaceShip = (row: number, col: number, size: number, orientation: Orientation, board: Board, boardSize: number): boolean => {
+  for (let i = 0; i < size; i++) {
+    const eixox = row + (orientation === 'V' ? i : 0);
+    const eixoy = col + (orientation === 'H' ? i : 0);
+    if (eixox >= boardSize || eixoy >= boardSize || board[eixox][eixoy]) return false;
+  }
+  return true;
+};
 export default function Home() {
   const [board, setBoard] = useState<Board>([]);
   const [attacks, setAttacks] = useState<Record<string, boolean>>({});
   const [rankings, setRankings] = useState<PlayerRanking[]>([]);
 
   useEffect(() => {
-    setBoard(initializeBoard(10, 15));
+    // Definindo diferentes tipos de navios
+    const ships = [
+      { name: 'Submarine', size: 1 },
+      { name: 'Destroyer', size: 2 },
+      { name: 'Destroyer', size: 2 },
+      { name: 'Cruiser', size: 3 },
+      { name: 'Battleship', size: 4 },
+      { name: 'Carrier', size: 5 }
+    ];
+    setBoard(initializeBoard(10, ships));
     handleGetTopPlayers();
   }, []);
 
