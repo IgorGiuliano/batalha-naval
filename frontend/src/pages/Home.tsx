@@ -260,15 +260,16 @@ export default function Home() {
         <h2>Regras do Jogo</h2>
         <br />
         <p>Para achar as embarcações é necessário clicar nos blocos azuis. Ao localiza-las, o bloco se tornará vermelho.</p>
+        <p>Todo jogador começa com 1000 pontos, a cada jogada é subtraído 10 pontos. Ao acertar a embarcação, soma-se o valor de pontos de acordo com a embarcação.</p>
         <p>Ao todo, existem seis (6) embarcações, sendo elas:</p>
         <br />
         <ul>
-          <li>1 - Submarino (1 bloco)</li>
-          <li>2 - Rebocador (2 blocos)</li>
-          <li>3 - Rebocador (2 blocos)</li>
-          <li>4 - Contratorpedeiro (3 blocos)</li>
-          <li>5 - Cruzador (4 blocos)</li>
-          <li>6 - Porta-aviões (5 blocos)</li>
+          <li>Submarino (1 bloco) - 50 pts</li>
+          <li>Rebocador (2 blocos) - 100 pts</li>
+          <li>Rebocador (2 blocos) - 100 pts</li>
+          <li>Contratorpedeiro (3 blocos) - 150 pts</li>
+          <li>Cruzador (4 blocos) - 200 pts</li>
+          <li>Porta-aviões (5 blocos) - 250 pts</li>
         </ul>
       </Modals>
 
